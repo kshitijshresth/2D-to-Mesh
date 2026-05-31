@@ -3,16 +3,21 @@ import numpy as np
 import open3d as o3d
 from depth_predictor import predict_depth
 from image_loader import load_image
-from model_loader import load_midas
+from model_loader import load_depth_pro
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
 
-def build_point_cloud(depth_np: np.ndarray, img_rgb: np.ndarray):
+def build_point_cloud(depth_np: np.ndarray, img_rgb: np.ndarray, focal_length: float = None):
     try:
         h, w = depth_np.shape
-        fx = fy = w * 1.2
+        if focal_length is not None and focal_length > 0:
+            fx = fy = float(focal_length)
+            logger.info(f"Using DepthPro focal length: {fx:.2f}px")
+        else:
+            fx = fy = w * 1.2
+            logger.info(f"Using estimated focal length: {fx:.2f}px")
         cx = w / 2.0
         cy = h / 2.0
 
@@ -52,9 +57,9 @@ def build_point_cloud(depth_np: np.ndarray, img_rgb: np.ndarray):
 if __name__ == "__main__":
     try:
         img = load_image("test.jpg")
-        model, transform = load_midas()
-        depth = predict_depth(model, transform, img)
-        pcd = build_point_cloud(depth, img)
+        model, transform = load_depth_pro()
+        depth, focal = predict_depth(model, transform, img)
+        pcd = build_point_cloud(depth, img, focal)
         logger.info("Point cloud built successfully")
     except Exception as e:
         logger.error(f"Error in main: {e}")

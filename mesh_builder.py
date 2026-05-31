@@ -3,7 +3,7 @@ import numpy as np
 import open3d as o3d
 from depth_predictor import predict_depth
 from image_loader import load_image
-from model_loader import load_midas
+from model_loader import load_depth_pro
 from pointcloud_builder import build_point_cloud
 from pointcloud_cleaner import clean_point_cloud
 
@@ -15,10 +15,18 @@ def build_mesh(pcd):
     try:
         logger.info("Running Poisson surface reconstruction")
         mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(
-            pcd, depth=9
+            pcd, depth=10
         )
         raw_triangles = len(mesh.triangles)
         logger.info(f"Raw mesh triangles: {raw_triangles}")
+
+        densities = np.asarray(densities)
+        density_threshold = np.quantile(densities, 0.02)
+        vertices_to_remove = densities < density_threshold
+        mesh.remove_vertices_by_mask(vertices_to_remove)
+        logger.info(
+            f"Removed {int(vertices_to_remove.sum())} low-density vertices (ballooning)"
+        )
 
         logger.info("Running quadric decimation")
         target = min(50000, raw_triangles)
@@ -56,9 +64,9 @@ def build_mesh(pcd):
 if __name__ == "__main__":
     try:
         img = load_image("test.jpg")
-        model, transform = load_midas()
-        depth = predict_depth(model, transform, img)
-        pcd = build_point_cloud(depth, img)
+        model, transform = load_depth_pro()
+        depth, focal = predict_depth(model, transform, img)
+        pcd = build_point_cloud(depth, img, focal)
         pcd = clean_point_cloud(pcd)
         mesh = build_mesh(pcd)
         logger.info("Mesh built successfully")

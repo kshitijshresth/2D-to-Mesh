@@ -1,3 +1,7 @@
 test.jpg
 depth_preview.png
-output_mesh.obj
+output*.obj
+output*.glb
+pipeline.log
+checkpoints/
+depth_pro.pt

@@ -1,10 +1,11 @@
 import argparse
 import logging
+import os
 import sys
 import time
 import traceback
 from depth_predictor import predict_depth
-from exporter import export_mesh
+from exporter import export_glb, export_mesh
 from image_loader import load_image
 from mesh_builder import build_mesh
 from model_loader import load_midas
@@ -33,14 +34,14 @@ def run_pipeline(args):
         logger.info("Step [1/7]: Load Image")
         img = load_image(args.input)
 
-        logger.info("Step [2/7]: Load MiDaS Model")
+        logger.info("Step [2/7]: Load DepthPro Model")
         model, transform = load_midas()
 
         logger.info("Step [3/7]: Depth Prediction")
-        depth = predict_depth(model, transform, img)
+        depth, focal = predict_depth(model, transform, img)
 
         logger.info("Step [4/7]: Build Point Cloud")
-        pcd = build_point_cloud(depth, img)
+        pcd = build_point_cloud(depth, img, focal)
 
         logger.info("Step [5/7]: Clean Point Cloud")
         pcd = clean_point_cloud(pcd)
@@ -49,7 +50,16 @@ def run_pipeline(args):
         mesh = build_mesh(pcd)
 
         logger.info("Step [7/7]: Export Mesh")
-        export_mesh(mesh, args.output)
+        base, _ = os.path.splitext(args.output)
+        obj_path = base + ".obj"
+        glb_path = base + ".glb"
+
+        if args.format in ("obj", "both"):
+            export_mesh(mesh, obj_path)
+        if args.format in ("glb", "both"):
+            export_glb(mesh, glb_path)
+
+        logger.info(f"Exported format(s): {args.format}")
 
         elapsed = time.perf_counter() - start
         logger.info(f"Pipeline finished in {elapsed:.2f}s")
@@ -65,10 +75,10 @@ def main():
     parser.add_argument("--input", required=True, help="Path to input image")
     parser.add_argument("--output", default="output.obj", help="Output mesh path")
     parser.add_argument(
-        "--model",
-        default="DPT_Large",
-        choices=["DPT_Large", "MiDaS_small"],
-        help="MiDaS model variant",
+        "--format",
+        default="obj",
+        choices=["obj", "glb", "both"],
+        help="Export format",
     )
     args = parser.parse_args()
     sys.exit(run_pipeline(args))

@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from depth_predictor import predict_depth
 from image_loader import load_image
-from model_loader import load_midas
+from model_loader import load_depth_pro
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -26,8 +26,8 @@ def save_depth_image(depth_np: np.ndarray, output_path: str):
 if __name__ == "__main__":
     try:
         img = load_image("test.jpg")
-        model, transform = load_midas()
-        depth = predict_depth(model, transform, img)
+        model, transform = load_depth_pro()
+        depth, focal = predict_depth(model, transform, img)
         save_depth_image(depth, "depth_preview.png")
         logger.info("Saved depth preview")
     except Exception as e:

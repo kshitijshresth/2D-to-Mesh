@@ -2,7 +2,7 @@ import logging
 import open3d as o3d
 from depth_predictor import predict_depth
 from image_loader import load_image
-from model_loader import load_midas
+from model_loader import load_depth_pro
 from pointcloud_builder import build_point_cloud
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -32,9 +32,9 @@ def clean_point_cloud(pcd):
 if __name__ == "__main__":
     try:
         img = load_image("test.jpg")
-        model, transform = load_midas()
-        depth = predict_depth(model, transform, img)
-        pcd = build_point_cloud(depth, img)
+        model, transform = load_depth_pro()
+        depth, focal = predict_depth(model, transform, img)
+        pcd = build_point_cloud(depth, img, focal)
         pcd = clean_point_cloud(pcd)
         logger.info("point cloud cleaned successfully")
     except Exception as e:
