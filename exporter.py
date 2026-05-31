@@ -38,7 +38,6 @@ def export_mesh(mesh, output_path: str):
         logger.error(f"Mesh export failed: {e}")
         raise
 
-
 if __name__ == "__main__":
     try:
         img = load_image("test.jpg")
