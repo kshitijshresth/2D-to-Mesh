@@ -54,6 +54,10 @@ The pipeline is split into small, single-responsibility modules that pass data f
 - `exporter.py` writes the mesh to `.obj`, reloads it, and asserts the triangle count matches to guard against silent corruption.
 - `pipeline.py` ties everything together with `argparse`, section logging, dual console/file logging, and total runtime measurement.
 
-<img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/cd4cc3b4-75dd-4cec-ab34-de945c4b0824" /><img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/c04553df-8c24-4b5c-9a3f-38c1d2d29960" />
+<img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/cd4cc3b4-75dd-4cec-ab34-de945c4b0824" />
+When using MIDAS
+<img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/c04553df-8c24-4b5c-9a3f-38c1d2d29960" />
+When using DEPTH PRO
+<img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/980c9a05-4a9c-43e6-8d16-b2443724337d" />
 
 
