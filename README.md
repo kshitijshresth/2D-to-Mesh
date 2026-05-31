@@ -53,3 +53,7 @@ The pipeline is split into small, single-responsibility modules that pass data f
 - `mesh_builder.py` uses Poisson reconstruction to get a watertight mesh, simplifies it with quadric decimation to ~50k triangles, and prunes tiny disconnected fragments.
 - `exporter.py` writes the mesh to `.obj`, reloads it, and asserts the triangle count matches to guard against silent corruption.
 - `pipeline.py` ties everything together with `argparse`, section logging, dual console/file logging, and total runtime measurement.
+
+<img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/cd4cc3b4-75dd-4cec-ab34-de945c4b0824" /><img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/c04553df-8c24-4b5c-9a3f-38c1d2d29960" />
+
+
